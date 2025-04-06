@@ -298,6 +298,6 @@ def magnet_beat_perfect_loop(name, description, seed=42, prefix=""):
 
 if __name__ == "__main__":
 
-    magnet_beat_perfect_loop("example", "A retro 80s synthwave track with analog synth arpeggios and punchy drums", seed=42)
+    magnet_beat_perfect_loop("example", "A retro 80s synthwave track with analog synth arpeggios and punchy drums")
     gc.collect()
     torch.cuda.empty_cache()
