@@ -53,7 +53,7 @@ if __name__ == "__main__":
     samples = os.listdir(".")
     samples = [os.path.join("./", sample) for sample in filter(lambda x: x.endswith(".wav"), samples)]
     
-    print("SEAM Perplexity")
+    print("Seam Perplexity")
     print("Mean\t\tCI")
     mean, ci = seam_perplexity_err(samples)
     print(f"{mean:.2f}\t\t{ci:.2f}")
