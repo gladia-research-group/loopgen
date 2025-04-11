@@ -3,9 +3,9 @@ import torch
 import numpy as np
 import gc
 import os
-from audiocraft.audiocraft.models import MusicGen
+from audiocraft.models import MusicGen
 from src.loopgen import LoopGen
-from audiocraft.audiocraft.data.audio import audio_write, audio_read
+from audiocraft.data.audio import audio_write, audio_read
 import random
 
 FILE2BEATS_CKPT = "final0.ckpt"
@@ -208,7 +208,7 @@ def magnet_beat_perfect_dumb_loop(name, description, seed=42):
     audio_write(f"magnet_beat_perfect_dumb_loop_{name}_{seed}", torch.cat([hint, hint], -1), sr, loudness_compressor=True, strategy="loudness", loudness_headroom_db=16)
 
 
-def magnet_loop(name, description, valid_tokens, hint=None, hint_sr=None, seed=42, prefix=""):
+def magnet_loop(name, description, valid_tokens, hint=None, hint_sr=None, seed=42, prefix="", rename=None):
     global loopgen, musicgen
 
     torch.manual_seed(seed)
@@ -243,16 +243,19 @@ def magnet_loop(name, description, valid_tokens, hint=None, hint_sr=None, seed=4
 
     with torch.autocast(device_type="cuda", dtype=torch.float16):
         if hint is None:
-            results = loopgen.generate(text_prompt=[description], negative_text_prompt = None, valid_tokens=valid_tokens)
+            results = loopgen.generate(text_prompt=description, negative_text_prompt = None, valid_tokens=valid_tokens)
         else:
-            results = loopgen.generate_continuation(text_prompt=[description], negative_text_prompt = None, left_hint=hint, left_hint_sr=hint_sr, valid_tokens=valid_tokens)
+            results = loopgen.generate_continuation(text_prompt=description, negative_text_prompt = None, left_hint=hint, left_hint_sr=hint_sr, valid_tokens=valid_tokens)
             
     results = results[0].to(device="cpu", dtype=torch.float32)
     if valid_tokens[0] == max_duration:
         results = torch.cat([results, results], -1)
         
-
-    audio_write(f"magnet_{prefix}_loop_{name}_{seed}", results, loopgen.sample_rate, loudness_compressor=True, strategy="loudness", loudness_headroom_db=16)
+    name = f"magnet_{prefix}_loop_{name}_{seed}"
+    if rename is not None:
+        name = rename
+        
+    audio_write(name, results, loopgen.sample_rate, loudness_compressor=True, strategy="loudness", loudness_headroom_db=16)
     
 
 def magnet_hybrid_loop(name, description, valid_tokens=400, seed=42, prefix=""):
@@ -269,7 +272,7 @@ def magnet_hybrid_loop(name, description, valid_tokens=400, seed=42, prefix=""):
     magnet_loop(name, description, [valid_tokens], hint, sr, seed=seed, prefix=f"hybrid_{prefix}")
     
     
-def magnet_beat_perfect_loop(name, description, seed=42, prefix=""):
+def loopgen_loop(name, description, seed=42):
     global file2beats, musicgen
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -294,10 +297,8 @@ def magnet_beat_perfect_loop(name, description, seed=42, prefix=""):
     hint = [hint[..., :int(0.02 * sr) * int(unit_length / 2)]]
     valid_tokens = int(unit_length)
     
-    magnet_loop(name, description, [valid_tokens], hint, sr, seed=seed, prefix="beat_perfect" + ("" if len(prefix)==0 else "_"+prefix))
+    magnet_loop(name, description, [valid_tokens], hint, sr, seed=seed, rename= f"loopgen_{name}_{seed}")
 
 if __name__ == "__main__":
 
-    magnet_beat_perfect_loop("example", "A retro 80s synthwave track with analog synth arpeggios and punchy drums")
-    gc.collect()
-    torch.cuda.empty_cache()
+    loopgen_loop("example", "A fast-paced trance anthem with arpeggiated synths and soaring leads")

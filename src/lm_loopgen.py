@@ -11,13 +11,13 @@ import torch
 import tqdm
 
 from copy import deepcopy
-from audiocraft.audiocraft.utils import utils
-from audiocraft.audiocraft.modules.conditioners import (
+from audiocraft.utils import utils
+from audiocraft.modules.conditioners import (
     ConditioningAttributes,
     ConditionType,
 )
-from audiocraft.audiocraft.models.lm import LMModel
-from audiocraft.audiocraft.models.lm_magnet import MagnetLMModel
+from audiocraft.models.lm import LMModel
+from audiocraft.models.lm_magnet import MagnetLMModel
 
 logger = logging.getLogger(__name__)
 ConditionTensors = tp.Dict[str, ConditionType]

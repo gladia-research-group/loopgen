@@ -1,8 +1,8 @@
 import torch
 import os
-from audiocraft.audiocraft.models import MusicGen
-from audiocraft.audiocraft.data.audio import audio_read
-from audiocraft.audiocraft.data.audio_utils import convert_audio
+from audiocraft.models import MusicGen
+from audiocraft.data.audio import audio_read
+from audiocraft.data.audio_utils import convert_audio
 
 musicgen = None
 MUSICGEN_MODEL = 'facebook/musicgen-medium'
@@ -54,6 +54,6 @@ if __name__ == "__main__":
     samples = [os.path.join("./", sample) for sample in filter(lambda x: x.endswith(".wav"), samples)]
     
     print("SEAM Perplexity")
-    print("Mean\t\t\t\t\tCI")
+    print("Mean\t\tCI")
     mean, ci = seam_perplexity_err(samples)
-    print(f"{mean:.2f}\t{ci:.2f}")
+    print(f"{mean:.2f}\t\t{ci:.2f}")
