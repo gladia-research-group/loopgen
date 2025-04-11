@@ -8,7 +8,6 @@ from src.loopgen import LoopGen
 from audiocraft.data.audio import audio_write, audio_read
 import random
 
-FILE2BEATS_CKPT = "final0.ckpt"
 MUSICGEN_MODEL = 'facebook/musicgen-medium'
 MAGNET_MODEL = 'facebook/magnet-medium-30secs'
 
@@ -22,7 +21,7 @@ RESCORE_WEIGHT = 0.5
 def get_beat_perfect_hint(path, min_length=5, max_length=10, unit_size=0.02, prompt_retries=3, length_retries=2):
     global file2beats
     if file2beats is None:
-        file2beats = File2Beats(checkpoint_path=FILE2BEATS_CKPT, device="cuda", dbn=False)
+        file2beats = File2Beats(checkpoint_path="final0", device="cuda", dbn=False)
     
     min_length = min_length // unit_size
     max_length = max_length // unit_size
